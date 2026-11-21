@@ -88,9 +88,11 @@ The website and this API share one database, so they must agree on its schema.
 - **[`../lib/db/schema.ts`](../lib/db/schema.ts) (website) is the source of truth.**
   [`src/db/schema.ts`](src/db/schema.ts) is a copy of it. The shared business rules in
   [`src/lib/constants.ts`](src/lib/constants.ts) (shipping fee, order statuses) are also copies.
-- **The API creates its own tables** with `npm run db:migrate`, which runs the idempotent SQL
-  files in [`migrations/`](migrations/). Those files only ever add things. Every table they
-  create must also be defined in the website's `lib/db/schema.ts`.
+- **`npm run db:migrate` creates every table** by running the idempotent SQL files in
+  [`migrations/`](migrations/) in name order. `0000_core_tables.sql` holds the website's
+  tables, so the API can also start from an empty database. On a database the website
+  already set up, those statements do nothing. The files only ever add things. Every table
+  they create must also be defined in the website's `lib/db/schema.ts`.
 - ⚠️ **Deploy the website's `lib/db/schema.ts` together with any API change that adds a
   table.** The website's `npm run db:push` makes the database match the website's schema
   exactly. If website code with an old schema runs it, the API's tables are **dropped**:
